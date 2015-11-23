@@ -1,0 +1,6 @@
+Project log Started : 11/22/2015 18:10:19
+11/22/2015 18:10:26    getting back in finally
+11/22/2015 18:15:10    limited flag carry to one flag at a time
+11/22/2015 18:18:50    level design is not my strong suit
+11/22/2015 18:25:20    its coming along, but not pretty
+11/22/2015 18:27:46    im gonna call that level finished, cant polish a turd

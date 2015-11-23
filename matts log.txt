@@ -1,0 +1,9 @@
+Project log Started : 11/21/2015 10:35:47
+11/21/2015 10:35:54    added logger to repo
+11/21/2015 10:36:07    starting shader modifcation
+11/21/2015 11:00:02    shaderlab does not support booleans. how fun.
+11/21/2015 11:00:09    scratching shader idea
+11/21/2015 11:00:15    starting pickup logic
+11/21/2015 11:06:21    base code written, trigger not activating
+11/21/2015 11:06:24    debug time
+11/21/2015 11:09:48    restarting pc. shits being weird...

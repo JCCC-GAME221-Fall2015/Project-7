@@ -1,0 +1,9 @@
+Project log Started : 11/21/2015 11:13:06
+11/21/2015 11:13:11    pc rebooted
+11/21/2015 11:14:38    note: when making a script, dont forget to assign it to your object
+11/21/2015 11:19:38    added pickup location to player
+11/21/2015 11:21:21    basic pick up complete. 
+11/21/2015 11:29:50    flag prefab created
+11/21/2015 11:30:00    flag pickup logic implemented
+11/21/2015 11:30:18    flag collider modified for better pick up
+11/21/2015 11:34:57    added frame work for flag drop and score
