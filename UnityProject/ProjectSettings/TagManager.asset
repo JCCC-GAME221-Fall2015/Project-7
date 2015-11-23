@@ -7,6 +7,9 @@ TagManager:
   - Ground
   - Fire
   - Obstacle
+  - PickUpObject
+  - Flag
+  - FlagDrop
   layers:
   - Default
   - TransparentFX
