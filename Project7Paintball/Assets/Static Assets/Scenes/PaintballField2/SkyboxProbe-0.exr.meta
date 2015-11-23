@@ -1,0 +1,62 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Project7Paintball/Assets/Static Assets/Scenes/PaintballField2/SkyboxProbe-0.exr.meta
+guid: 2ed88f608cbe64641954ed4830af7b6f
+timeCreated: 1448130141
+licenseType: Pro
+=======
+guid: 7447282845adc634f88716754eadec6a
+timeCreated: 1448131308
+licenseType: Free
+>>>>>>> refs/remotes/origin/pr/12:Project7Paintball/Assets/Static Assets/Scenes/PaintballField_a1/SkyboxProbe-0.exr.meta
+TextureImporter:
+  fileIDToRecycleName:
+    8900000: generatedCubemap
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 1
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 1
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 2
+    aniso: 0
+    mipBias: 0
+    wrapMode: 1
+  nPOTScale: 1
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 100
+  spriteMode: 0
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 0
+  textureType: 3
+  buildTargetSettings: []
+  spriteSheet:
+    sprites: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
