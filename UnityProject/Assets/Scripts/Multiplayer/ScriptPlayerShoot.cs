@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine.Networking;
 
 // Author: Nathan Boehning
-// Purpose: Gives players ability to shoot each other and obstacles.
+// Purpose: Gives players ability to shoot each other.
 
 public class ScriptPlayerShoot : NetworkBehaviour
 {
@@ -52,35 +52,38 @@ public class ScriptPlayerShoot : NetworkBehaviour
         }
     }
 
-    [Client]
+    // Updating following the UNET tutorials by GTGD
     void Shoot()
     {
         // Define a raycast
         RaycastHit hit;
 
         // Shoot a raycast from the camera straight forward
-        if (Physics.Raycast(camera.transform.position, camera.transform.forward, out hit, weapon.range))
+        if (Physics.Raycast(camera.transform.TransformPoint(0, 0, 0.5f), camera.transform.forward, out hit, weapon.range))
         {
             // If the raycast hit a player
             if (hit.transform.tag == "Player")
             {
+                string uIdentity = hit.transform.name;
+
                 // Call function to update players health
-                CmdPlayerShot(hit.transform.name);
+                CmdTellServerWhoWasShot(uIdentity, weapon.damage);
             }
-            // If the raycast hit a generated obstacle
-            else if (hit.collider.tag == "Obstacle")
-            {
-                // Teleport on top of it
-                transform.position = hit.transform.GetChild(0).position;
-            }
-            else
-            {
-                // Display what the shot hit
-                Debug.Log("We hit: " + hit.transform.name);
-            }
+            
         }
     }
 
+    [Command]
+    void CmdTellServerWhoWasShot(string uniqueID, int dmg)
+    {
+        // Find the game object that was shot.
+        GameObject go = GameObject.Find(uniqueID);
+
+        // Apply the damage to the player.
+        go.GetComponent<Script_PlayerHealth>().DeductHealth(dmg);
+    }
+
+    /*
     [Command]
     void CmdPlayerShot(string inputName)
     {
@@ -90,6 +93,7 @@ public class ScriptPlayerShoot : NetworkBehaviour
         // Find the player that was shot, and remove health based on the weapons damage
         GameObject.Find(inputName).GetComponent<Script_PlayerHealth>().RemoveHealth(weapon.damage);
     }
+    */
 
     // Enforces the rate of fire of the weapon
     IEnumerator RecycleWeapon()
