@@ -5,45 +5,41 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 public class Script_PlayerHealth : NetworkBehaviour
 {
-    [SyncVar]
-    public int syncHealth;           // Synced variable to hold the players health
-
-    [SyncVar]
-    private MeshRenderer syncRenderer;
-
+    [SyncVar(hook = "OnHealthChanged")]
+    public int health;           // Synced variable to hold the players health
+   
     public string playerName;        // Holds the player name
     private string iD;               // Holds the network ID name
-    public int playerHealth = 100;   // Holds the players health
     public int respawnHealth = 75;   // Holds the health the player will respawn with
 
     public Text playerNameText;      // Text field that displays the players name.
     public Text playerHealthText;    // Text field that displays the players health.
-    public Text respawnTimeText;     // Text field that displays respawn countdown.
 
-    private GameObject respawnUI;    // Holds the respawn UI
-    public int respawnTime = 10;     // How long until player respawns
-    private int countdownTime;       // Variable to hold the current time the player has been dead
-    private bool isDead;             // Boolean for if the player is dead
-
-    private GameObject target;       // Holds the target in center of screen
+    private bool shouldDie = false;  // Boolean for if the player is dead
+    public bool isDead = false;
     
 
+    public delegate void DieDelegate();
+    public event DieDelegate EventDie;
+
+    public delegate void RespawnDelegate();
+    public event RespawnDelegate EventRespawn;
+
     // @author: Nathan Boehning
-    // @summary: Displays the player name and debugs the players life every two seconds.
+    // @summary: Displays the player name and allows health to be changed.
     //           Keeps the players life synced inside of the server.
-    public override void OnStartClient()
+    void Start()
     {
 
         // Finds the various UI elements within the scene when its created
         playerNameText = GameObject.Find("TextPlayerName").GetComponent<Text>();
         playerHealthText = GameObject.Find("TextPlayerHealth").GetComponent<Text>();
-        respawnUI = GameObject.Find("Canvas").transform.GetChild(3).gameObject;
-        respawnTimeText = respawnUI.transform.GetChild(1).GetComponent<Text>();
-        target = GameObject.Find("Image");
-        syncRenderer = transform.GetChild(2).GetComponent<MeshRenderer>();
 
         iD = "Player " + GetComponent<NetworkIdentity>().netId;
         gameObject.name = iD;
+
+        // Sets the initial health text
+        SetHealthText();
 
         // Sets the player name to the ID if it doesn't have a name
         if (string.IsNullOrEmpty(playerName))
@@ -54,70 +50,82 @@ public class Script_PlayerHealth : NetworkBehaviour
         // Sets the text of the text field to the player name
         playerNameText.text = playerName;
 
-        // Set the variable that will be counted down to the designer defined variable
-        countdownTime = respawnTime;
-
-        // Sync the players initial health
-        CmdSendHealthToServer(playerHealth);
-
-        // Sync the players initial render
-        CmdUpdateRenderer(true);
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
     public void Update()
     {
-        if (gameObject.name == iD)
+
+        CheckCondition();
+
+    }
+
+    // Updating following the GTGD tutorials
+
+    void CheckCondition()
+    {
+        if (health <= 0 && !shouldDie && !isDead)
         {
+            shouldDie = true;
+        }
+
+        if (health <= 0 && shouldDie)
+        {
+            if (EventDie != null)
+            {
+                EventDie();
+            }
+
+            shouldDie = false;
+        }
+
+        if (health > 0 && isDead)
+        {
+            if (EventRespawn != null)
+            {
+                EventRespawn();
+            }
+
+            isDead = false;
+        }
+
+    }
+
+    public void DeductHealth(int dmg)
+    {
+        health -= dmg;
+    }
+
+    void OnHealthChanged(int newHealth)
+    {
+        health = newHealth;
+        SetHealthText();
+    }
+
+    public void ResetHealth()
+    {
+        health = 100;
+    }
+
+    void SetHealthText()
+    {
+        if (isLocalPlayer)
+        {
+            // Update the healths text
+            playerHealthText.text = "Health: " + health;
+
             // Change the color of the player health text based on how much is left
-            if (syncHealth > 60)
+            if (health > 60)
                 playerHealthText.color = Color.green;
-            else if (syncHealth > 25)
+            else if (health > 25)
                 playerHealthText.color = Color.yellow;
             else
                 playerHealthText.color = Color.red;
-                
-            // Set the text to the players health
-            playerHealthText.text = "Health: " + syncHealth;
-
-            playerNameText.text = playerName;
-            
-            // If the players health is less than or equal to zero
-            if (playerHealth <= 0 || syncHealth <= 0)
-            {
-                playerHealth = 0;     // Ensure it won't go to negative numbers
-                syncHealth = 0;
-
-                // If player hasn't already been set to dead
-                if (!isDead)
-                {
-                    // enable the respawn UI
-                    respawnUI.SetActive(true);
-
-                    // Set the player to dead
-                    isDead = true;
-
-
-                    CmdUpdateRenderer(false);
-
-                    // Remove the target reticule
-                    target.SetActive(false);
-
-                    // Set the respawn countdown text
-                    respawnTimeText.text = respawnTime.ToString();
-
-                    // Disable the renderer and controller
-                    gameObject.GetComponent<RigidbodyFirstPersonController>().enabled = false;
-
-                    // Invoke Countdown timer to decrement time til respawn
-                    InvokeRepeating("CountdownTimer", 0.0f, 1.0f);
-                }
-            }
         }
     }
 
+    /*
     [Client]
     public void AddHealth(int healthToAdd)
     {
@@ -151,28 +159,5 @@ public class Script_PlayerHealth : NetworkBehaviour
     {
         syncRenderer.enabled = isRendered;
     }
-
-    // Decrements the time til player can respawn
-    // Whenever it hits zero, it sets the position of the player to one of the spawn positions and resets all variables
-    // To the state where player can play the game, and cancels the invoke on countdown so it doesn't
-    // Continue to count down
-    void CountdownTimer()
-    {
-        countdownTime -= 1;
-        respawnTimeText.text = countdownTime.ToString();
-        if (countdownTime <= 0)
-        {
-            gameObject.transform.position =
-                GameObject.Find("Spawn Positions").transform.GetChild(Random.Range(0, 3)).transform.position;
-            gameObject.GetComponent<RigidbodyFirstPersonController>().enabled = true;
-            isDead = false;
-            countdownTime = respawnTime;
-            respawnUI.SetActive(false);
-            target.SetActive(true);
-            CmdUpdateRenderer(true);
-            playerHealth += respawnHealth;
-            CmdSendHealthToServer(respawnHealth);
-            CancelInvoke("CountdownTimer");
-        }
-    }
+    */
 }
